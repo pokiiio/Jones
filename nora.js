@@ -5,6 +5,9 @@ const NORA_CHARACTERISTIC_SERVICE_UUID = "0000fee0-0000-1000-8000-00805f9b34fb";
 const NORA_CHARACTERISTIC_DATA_UUID = "0000fee1-0000-1000-8000-00805f9b34fb";
 
 function writeValue(writeFunction) {
+    showModal("Writing...");
+    disableButtons();
+
     navigator.bluetooth.requestDevice({
         filters: [
             { services: [NORA_CHARACTERISTIC_SERVICE_UUID] },
@@ -28,12 +31,24 @@ function writeValue(writeFunction) {
             return targetDevice.gatt.disconnect();
         })
         .then(() => {
-            showModal("write done");
+            showModal("Wrote successfully.");
+            enableButtons();
         })
         .catch(error => {
             showModal(error);
+            enableButtons();
             targetDevice = null;
         });
+}
+
+function enableButtons() {
+    document.getElementById("button1").disabled = false;
+    document.getElementById("button2").disabled = false;
+}
+
+function disableButtons() {
+    document.getElementById("button1").disabled = true;
+    document.getElementById("button2").disabled = true;
 }
 
 function writeTeamNoraHack(characteristic) {
@@ -80,6 +95,7 @@ function writeTeamNoraHack(characteristic) {
         .then(() => { return characteristic.writeValue(data13); })
         .then(() => { return sleep(); })
         .then(() => { return characteristic.writeValue(data14); })
+        .then(() => { return sleep(); })
 }
 
 function writeHackOrDie(characteristic) {
@@ -120,6 +136,7 @@ function writeHackOrDie(characteristic) {
         .then(() => { return characteristic.writeValue(data11); })
         .then(() => { return sleep(); })
         .then(() => { return characteristic.writeValue(data12); })
+        .then(() => { return sleep(); })
 }
 
 function sleep() {
